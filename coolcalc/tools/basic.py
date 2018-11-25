@@ -14,19 +14,21 @@ def check_scientific_notation(value: str):
 
 
 def compute_scientific_notation(value: str):
-    sci_not_match = SCI_NOT_PATTERN.findall(value)
     check_result = check_scientific_notation(value)
-    if (not sci_not_match) or (abs(Decimal(sci_not_match[0][0])) > Decimal('10.')):  # Only normalized form accepted
-        raise Exception('Improper scientific notation')
-    coefficient = Decimal(sci_not_match[0][0])
-    exponent = Decimal(sci_not_match[0][-1])
-    return Decimal(coefficient * (Decimal('10.') ** exponent))
+    if check_result is None:
+        raise Exception('Improper scientific notation')  # Will be changed to a custom exception later
+    return Decimal(check_result[0] * (Decimal('10.') ** check_result[1]))
+
+
+def basic_is_integer(value: Decimal):
+    return value == Decimal(int(value))
 
 
 def is_integer(value: str):
     value = value[1:] if (value[0] == '-') else value
-    if 'e' in value.lower():
-        pass
-
-
-print(compute_scientific_notation('2.2e-5'))
+    result = value
+    try:
+        result = compute_scientific_notation(value)
+        return basic_is_integer(result)
+    except Exception:
+        return basic_is_integer(Decimal(result))
