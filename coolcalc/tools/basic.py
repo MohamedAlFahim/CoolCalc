@@ -2,24 +2,16 @@ import re
 from decimal import Decimal
 from coolcalc.exceptions.basic import ImproperScientificNotation
 
-STRICT_SCI_NOT_PATTERN = re.compile(r'^(-?[1-9]\.?\d*)[EeXx](10\^)?([+\-]?\d+)$')
+STRICT_SCI_NOT_PATTERN = re.compile(r'^(-?[1-9](\.\d*)?)[EeXx](10\^)?([+\-]?\d+)$')
 ACCEPTING_SCI_NOT_PATTERN = re.compile(r'^(-?\d*\.?\d*)[EeXx](10\^)?([+\-]?\d*\.?\d*)$')
-EXPERIMENTAL_STRICT_PATTERN = re.compile(r'^(-?[1-9](\.\d*)?)[EeXx](10\^)?([+\-]?\d+)$')
 
 
 def check_scientific_notation(value: str, strict=True):
-    if strict:
-        sci_not_match = EXPERIMENTAL_STRICT_PATTERN.findall(value)
-        if not sci_not_match:
-            return None
-        coefficient = Decimal(sci_not_match[0][0])
-        exponent = Decimal(sci_not_match[0][-1])
-    else:
-        sci_not_match = ACCEPTING_SCI_NOT_PATTERN.findall(value)
-        if not sci_not_match:  # Even invalid form accepted
-            return None
-        coefficient = Decimal(sci_not_match[0][0])
-        exponent = Decimal(sci_not_match[0][-1])
+    sci_not_match = STRICT_SCI_NOT_PATTERN.findall(value) if strict else ACCEPTING_SCI_NOT_PATTERN.findall(value)
+    if not sci_not_match:
+        return None
+    coefficient = Decimal(sci_not_match[0][0])
+    exponent = Decimal(sci_not_match[0][-1])
     return coefficient, exponent
 
 
