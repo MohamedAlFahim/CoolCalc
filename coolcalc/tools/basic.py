@@ -32,3 +32,7 @@ def is_integer(value: str):
         return basic_is_integer(result)
     except Exception:
         return basic_is_integer(Decimal(result))
+
+
+def convert_to_scientific_notation():
+    pass
