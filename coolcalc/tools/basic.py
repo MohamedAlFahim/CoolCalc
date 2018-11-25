@@ -9,8 +9,8 @@ EXPERIMENTAL_STRICT_PATTERN = re.compile(r'^(-?[1-9](\.\d*)?)[EeXx](10\^)?([+\-]
 
 def check_scientific_notation(value: str, strict=True):
     if strict:
-        sci_not_match = STRICT_SCI_NOT_PATTERN.findall(value)
-        if (not sci_not_match) or (abs(Decimal(sci_not_match[0][0])) > Decimal('10.')):  # Only normalized form accepted
+        sci_not_match = EXPERIMENTAL_STRICT_PATTERN.findall(value)
+        if not sci_not_match:
             return None
         coefficient = Decimal(sci_not_match[0][0])
         exponent = Decimal(sci_not_match[0][-1])
@@ -46,7 +46,3 @@ def is_integer(value: str):
 
 def convert_to_scientific_notation(value: str):
     pass
-
-
-x = EXPERIMENTAL_STRICT_PATTERN.findall('0.99e1857686')
-print(x)
