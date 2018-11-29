@@ -38,5 +38,34 @@ def is_integer(value: str):
         return basic_is_integer(Decimal(result))
 
 
+def get_decimal_position(value: str):
+    point_find_result = value.find('.')
+    return point_find_result if (point_find_result != -1) else None
+
+
+def shift_decimal_left(value: str):
+    point_find_result = get_decimal_position(value)
+    without_point = value.replace('.', '')
+    return without_point[:point_find_result - 1] + '.' + without_point[point_find_result - 1:]
+
+
+def shift_decimal_right(value: str):
+    point_find_result = get_decimal_position(value)
+    without_point = value.replace('.', '')
+    return without_point[:point_find_result + 1] + '.' + without_point[point_find_result + 1:]
+
+
 def convert_to_scientific_notation(value: str):
-    pass
+    check_result = check_scientific_notation(value)
+    if check_result is not None:
+        return value
+    has_negative_sign = value[0] == '-'
+    without_sign = value[1:] if has_negative_sign else value
+    point_find_result = value.find('.')
+    current_coefficient = without_sign
+    if point_find_result == -1:  # No decimal point
+        pass
+    else:
+        if Decimal(without_sign) < 1:  # i.e. 0.0052
+            while Decimal(current_coefficient) < 1:
+                pass
