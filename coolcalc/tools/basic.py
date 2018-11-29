@@ -55,6 +55,14 @@ def shift_decimal_right(value: str):
     return without_point[:point_find_result + 1] + '.' + without_point[point_find_result + 1:]
 
 
+def handle_less_than_one(value: str):
+    shifts = 0
+    while Decimal(value) < 1:
+        value = shift_decimal_right(value)
+        shifts += 1
+    return str(Decimal(value)), shifts
+
+
 def convert_to_scientific_notation(value: str):
     check_result = check_scientific_notation(value)
     if check_result is not None:
@@ -69,3 +77,6 @@ def convert_to_scientific_notation(value: str):
         if Decimal(without_sign) < 1:  # i.e. 0.0052
             while Decimal(current_coefficient) < 1:
                 pass
+
+
+# print(handle_less_than_one('0.00082'))
