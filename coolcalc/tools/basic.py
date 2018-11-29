@@ -60,7 +60,19 @@ def handle_less_than_one(value: str):
     while Decimal(value) < 1:
         value = shift_decimal_right(value)
         shifts += 1
-    return str(Decimal(value)), shifts
+    coefficient = str(Decimal(value))
+    exponent = str(-shifts)
+    return coefficient + 'e' + exponent
+
+
+def handle_greater_than_or_equal_to_ten(value: str):
+    shifts = 0
+    while Decimal(value) >= 10:
+        value = shift_decimal_left(value)
+        shifts += 1
+    coefficient = str(Decimal(value))
+    exponent = str(shifts)
+    return coefficient + 'e' + exponent
 
 
 def convert_to_scientific_notation(value: str):
@@ -79,4 +91,5 @@ def convert_to_scientific_notation(value: str):
                 pass
 
 
-# print(handle_less_than_one('0.00082'))
+# print(handle_less_than_one('0.094'))
+# print(handle_greater_than_or_equal_to_ten('10.'))
