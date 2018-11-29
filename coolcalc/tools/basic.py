@@ -1,13 +1,15 @@
 import re
 from decimal import Decimal
 from coolcalc.exceptions.basic import ImproperScientificNotation
+from coolcalc.preferences import STRICT_SCIENTIFIC_NOTATION
 
 STRICT_SCI_NOT_PATTERN = re.compile(r'^(-?[1-9](\.\d*)?)[EeXx](10\^)?([+\-]?\d+)$')
 ACCEPTING_SCI_NOT_PATTERN = re.compile(r'^(-?\d*\.?\d*)[EeXx](10\^)?([+\-]?\d*\.?\d*)$')
 
 
-def check_scientific_notation(value: str, strict=True):
-    sci_not_match = STRICT_SCI_NOT_PATTERN.findall(value) if strict else ACCEPTING_SCI_NOT_PATTERN.findall(value)
+def check_scientific_notation(value: str):
+    sci_not_match = STRICT_SCI_NOT_PATTERN.findall(
+        value) if STRICT_SCIENTIFIC_NOTATION else ACCEPTING_SCI_NOT_PATTERN.findall(value)
     if not sci_not_match:
         return None
     coefficient = Decimal(sci_not_match[0][0])
@@ -27,7 +29,7 @@ def basic_is_integer(value: Decimal):
 
 
 def is_integer(value: str):
-    value = value[1:] if (value[0] == '-') else value
+    # value = value[1:] if (value[0] == '-') else value
     result = value
     try:
         result = compute_scientific_notation(value)
