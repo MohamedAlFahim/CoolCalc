@@ -82,14 +82,15 @@ def convert_to_scientific_notation(value: str):
     has_negative_sign = value[0] == '-'
     without_sign = value[1:] if has_negative_sign else value
     point_find_result = value.find('.')
-    current_coefficient = without_sign
+    # current_coefficient = without_sign
+    sign = '-' if has_negative_sign else ''
     if point_find_result == -1:  # No decimal point
         pass
     else:
         if Decimal(without_sign) < 1:  # i.e. 0.0052
-            while Decimal(current_coefficient) < 1:
-                pass
+            return sign + handle_less_than_one(without_sign)
 
 
 # print(handle_less_than_one('0.094'))
 # print(handle_greater_than_or_equal_to_ten('10.'))
+# print(convert_to_scientific_notation('-0.0094'))
