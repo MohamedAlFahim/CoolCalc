@@ -55,6 +55,12 @@ def shift_decimal_right(value: str):
     return without_point[:point_find_result + 1] + '.' + without_point[point_find_result + 1:]
 
 
+def remove_negative_sign(value: str):
+    has_negative_sign = value[0] == '-'
+    without_sign = value[1:] if has_negative_sign else value
+    return without_sign, has_negative_sign
+
+
 def handle_less_than_one(value: str):
     shifts = 0
     while Decimal(value) < 1:
@@ -79,8 +85,7 @@ def convert_to_scientific_notation(value: str):
     check_result = check_scientific_notation(value)
     if check_result is not None:
         return value
-    has_negative_sign = value[0] == '-'
-    without_sign = value[1:] if has_negative_sign else value
+    without_sign, has_negative_sign = remove_negative_sign(value)
     point_find_result = value.find('.')
     # current_coefficient = without_sign
     sign = '-' if has_negative_sign else ''
