@@ -116,21 +116,35 @@ dictionary = {
     '0.0': 0,
     '2.0': 2,
     '2.0e1': 2,
-    '0.00008': 1
+    '0.00008': 1,
+    '2.0e3': 2,
+    '120': 2
 }
 
 
-def underline_sig_figs(value: str):
+def style_green(text: str):
+    return '\033[92m' + text + '\033[0m'
+
+
+def style_red(text: str):
+    return '\033[91m' + text + '\033[0m'
+
+
+def underline_sig_figs(value: str, test_dictionary):
     underline_space = list(' ' * len(value))
+    colored_value = list(value)
+    test_result = len(significant_figure_info(value)) == test_dictionary[value]
+    color_function = style_green if test_result else style_red
     x = sorted(significant_figure_info(value), key=lambda x: x[1])
     for result_tuple in x:
-        underline_space[result_tuple[1]] = '^'
-    print(value)
+        underline_space[result_tuple[1]] = color_function('^')
+        colored_value[result_tuple[1]] = color_function(colored_value[result_tuple[1]])
+    print(''.join(colored_value))
     print(''.join(underline_space))
+    print('TEST RESULT:', style_green('Pass') if test_result else style_red('Fail'))
 
 
 for key in dictionary:
     print(' ')
-    underline_sig_figs(key)
-    print('TEST RESULT:', 'Pass' if (len(significant_figure_info(key)) == dictionary[key]) else 'Fail')
+    underline_sig_figs(key, dictionary)
     print(' ')
