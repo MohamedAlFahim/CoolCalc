@@ -118,7 +118,19 @@ dictionary = {
     '2.0e1': 2,
     '0.00008': 1
 }
+
+
+def underline_sig_figs(value: str):
+    underline_space = list(' ' * len(value))
+    x = sorted(significant_figure_info(value), key=lambda x: x[1])
+    for result_tuple in x:
+        underline_space[result_tuple[1]] = '^'
+    print(value)
+    print(''.join(underline_space))
+
+
 for key in dictionary:
-    print(significant_figure_info(key))
-    print(len(significant_figure_info(key)) == dictionary[key])
+    print(' ')
+    underline_sig_figs(key)
+    print('TEST RESULT:', 'Pass' if (len(significant_figure_info(key)) == dictionary[key]) else 'Fail')
     print(' ')
