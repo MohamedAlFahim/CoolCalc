@@ -63,24 +63,27 @@ def handle_sig_fig_info_without_point(value: str):
 
 
 def handle_sig_fig_info_with_point(value: str):
-    # TODO: Will work on this
-    value = value.lstrip('0')
+    without_sign, negative_sign_offset = count_negative_sign_offset(value)
+    without_leading_zeros, leading_zeros_offset = count_leading_zeros_offset(without_sign)
+    offset = negative_sign_offset + leading_zeros_offset
     global significant_digit_left
     i = 0
-    if Decimal(value) < 1:
-        value = value[1:]
-        while value[i] == '0':
+    if Decimal(without_leading_zeros) < 1:
+        without_point = without_leading_zeros[1:]
+        offset += 1
+        while without_point[i] == '0':
             i += 1
-        for character in value:
-            if character == '0':
-                pass
-            elif character == '.':
-                pass
-            else:
-                pass
+        for character in without_point[i:]:
+            print(character)
+            add_significant_digit(character, i + offset, 5)
+            # Rule 5: For numbers less than 1, the end digits are significant
             i += 1
     else:
-        pass
+        for character in without_leading_zeros:
+            if character != '.':
+                add_significant_digit(character, i + offset, 4)
+                # Rule 4: All digits except the beginning zeros are significant
+            i += 1
     temp = result
     cleanup()
     return temp
@@ -96,21 +99,14 @@ def significant_figure_info(value: str):
         value = str(value)
     if Decimal(value) == 0:
         return []  # Note that 0, 0., 0.0, 0.00, and etc. have no sig-figs.
-    value = value.lstrip('0')
-    i = 0
-    for character in value:
-        # result.append((digit, position, rule))
-        if character == '0':
-            if significant_digit_left:
-                zeros_put_aside.append(i)
-        elif character == '.':
-            for item in zeros_put_aside:
-                result.append(('0', i, 4))
-            passed_decimal_point = True
-        else:
-            for item in zeros_put_aside:
-                result.append(('0', i, 2))
-            result.append((character, i, 1))
-            significant_digit_left = True
-        i += 1
-    return result
+    if get_decimal_position(value) is None:
+        return handle_sig_fig_info_without_point(value)
+    return handle_sig_fig_info_with_point(value)
+
+
+print(significant_figure_info('3022'))
+dictionary = {
+    '2220': 3
+}
+for key in dictionary:
+    print(significant_figure_info(key))
