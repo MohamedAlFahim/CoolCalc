@@ -4,11 +4,15 @@ from decimal import Decimal
 result = []
 zeros_put_aside = []
 significant_digit_left = False
-passed_decimal_point = False
 
 
 # Rule Numbers
-NON_ZERO_RULE = 1
+NON_ZERO_RULE = 1  # Non-zero digits are significant
+ZEROS_BETWEEN_RULE = 2  # Zeros between significant digits are significant
+LESS_THAN_ONE_RULE = 3  # For numbers less than 1 (i.e. 0.0010), the rightmost end digits are significant. In other
+# words, all digits except the beginning zeros (i.e. 0.00000...) are significant.
+GREATER_THAN_OR_EQUAL_TO_ONE_RULE = 4  # For numbers greater than or equal to 1, all digits except the leading zeros
+# are significant.
 
 
 def add_significant_digit(digit: str, position: int, rule: int):
@@ -20,7 +24,7 @@ def add_significant_digit(digit: str, position: int, rule: int):
 def collect_zeros_put_aside():
     global zeros_put_aside
     for zero_position in zeros_put_aside:
-        add_significant_digit('0', zero_position, 3)
+        add_significant_digit('0', zero_position, ZEROS_BETWEEN_RULE)
     zeros_put_aside = []
 
 
@@ -28,11 +32,9 @@ def cleanup():
     global result
     global zeros_put_aside
     global significant_digit_left
-    global passed_decimal_point
     result = []
     zeros_put_aside = []
     significant_digit_left = False
-    passed_decimal_point = False
 
 
 def count_negative_sign_offset(value: str):
@@ -58,7 +60,7 @@ def handle_sig_fig_info_without_point(value: str):
                 zeros_put_aside.append(i + offset)
         else:
             significant_digit_left = True
-            add_significant_digit(character, i + offset, 1)
+            add_significant_digit(character, i + offset, NON_ZERO_RULE)
             collect_zeros_put_aside()
         i += 1
     temp = result
@@ -78,14 +80,12 @@ def handle_sig_fig_info_with_point(value: str):
         while without_point[i] == '0':
             i += 1
         for character in without_point[i:]:
-            add_significant_digit(character, i + offset, 5)
-            # Rule 5: For numbers less than 1, the end digits are significant
+            add_significant_digit(character, i + offset, LESS_THAN_ONE_RULE)
             i += 1
     else:
         for character in without_leading_zeros:
             if character != '.':
-                add_significant_digit(character, i + offset, 4)
-                # Rule 4: All digits except the beginning zeros are significant
+                add_significant_digit(character, i + offset, GREATER_THAN_OR_EQUAL_TO_ONE_RULE)
             i += 1
     temp = result
     cleanup()
@@ -93,9 +93,6 @@ def handle_sig_fig_info_with_point(value: str):
 
 
 def significant_figure_info(value: str):
-    # 1 - non-zero digits are significant
-    # 2 - zeros between two significant digits are significant
-    # 3 - if the number has a decimal point, trailing zeros are significant
     check_result = check_scientific_notation(value)
     if check_result is not None:  # scientific notation
         value, exponent = check_result
@@ -107,11 +104,19 @@ def significant_figure_info(value: str):
     return handle_sig_fig_info_with_point(value)
 
 
-# print(significant_figure_info('3022'))
+# Note that character positions, rather than digit positions, are returned. This is to help with LaTeX underline
+# positioning later on (for when the calculator shows its work).
+
+# Test
 dictionary = {
     '2220': 3,
     '-0020.': 2,
-    '00000.000110': 3
+    '00000.000110': 3,
+    '20': 1,
+    '0.0': 0,
+    '2.0': 2,
+    '2.0e1': 2,
+    '0.00008': 1
 }
 for key in dictionary:
     print(significant_figure_info(key))
