@@ -7,6 +7,10 @@ significant_digit_left = False
 passed_decimal_point = False
 
 
+# Rule Numbers
+NON_ZERO_RULE = 1
+
+
 def add_significant_digit(digit: str, position: int, rule: int):
     result.append((digit, position, rule))
     global significant_digit_left
@@ -74,7 +78,6 @@ def handle_sig_fig_info_with_point(value: str):
         while without_point[i] == '0':
             i += 1
         for character in without_point[i:]:
-            print(character)
             add_significant_digit(character, i + offset, 5)
             # Rule 5: For numbers less than 1, the end digits are significant
             i += 1
@@ -104,9 +107,13 @@ def significant_figure_info(value: str):
     return handle_sig_fig_info_with_point(value)
 
 
-print(significant_figure_info('3022'))
+# print(significant_figure_info('3022'))
 dictionary = {
-    '2220': 3
+    '2220': 3,
+    '-0020.': 2,
+    '00000.000110': 3
 }
 for key in dictionary:
     print(significant_figure_info(key))
+    print(len(significant_figure_info(key)) == dictionary[key])
+    print(' ')
