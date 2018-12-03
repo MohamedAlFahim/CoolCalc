@@ -29,7 +29,6 @@ def basic_is_integer(value: Decimal):
 
 
 def is_integer(value: str):
-    # value = value[1:] if (value[0] == '-') else value
     result = value
     try:
         result = compute_scientific_notation(value)
@@ -87,7 +86,6 @@ def convert_to_scientific_notation(value: str):
         return value
     without_sign, has_negative_sign = remove_negative_sign(value)
     point_find_result = value.find('.')
-    # current_coefficient = without_sign
     sign = '-' if has_negative_sign else ''
     if point_find_result == -1:  # No decimal point
         pass
@@ -96,6 +94,9 @@ def convert_to_scientific_notation(value: str):
             return sign + handle_less_than_one(without_sign)
 
 
-# print(handle_less_than_one('0.094'))
-# print(handle_greater_than_or_equal_to_ten('10.'))
-# print(convert_to_scientific_notation('-0.0094'))
+def get_fractional_part(value: str):
+    # Does not work if value is in scientific notation
+    point_find_result = get_decimal_position(value)
+    if (point_find_result is None) or (value[point_find_result + 1:] == ''):
+        return None
+    return value[point_find_result + 1:]
