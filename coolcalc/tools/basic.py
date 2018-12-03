@@ -100,3 +100,37 @@ def get_fractional_part(value: str):
     if (point_find_result is None) or (value[point_find_result + 1:] == ''):
         return None
     return value[point_find_result + 1:]
+
+
+def lowest_common_multiple(a: int, b: int):
+    from math import gcd
+    return int((a * b) / gcd(a, b))
+
+
+def is_prime(number: int):
+    # based on https://stackoverflow.com/questions/567222/simple-prime-generator-in-python
+    if number == 0 or number == 1:
+        return False
+    for divisor in range(2, number):
+        if number % divisor == 0:
+            return False
+    return True
+
+
+def prime_numbers_until(number: int):
+    # also includes 'number' if it is prime
+    return list(filter(is_prime, range(1, number + 1)))
+
+
+def prime_factors(number: int):
+    if number == 0:
+        raise Exception('Zero has infinite factors.')
+    # based on https://en.wikipedia.org/wiki/Talk%3APrime_factorization_algorithm
+    primes = []
+    candidates = range(2, int(number + 1))
+    candidate = 2
+    while not primes and candidate in candidates:
+        if number % candidate == 0 and is_prime(candidate):
+            primes = primes + [candidate] + prime_factors(number/candidate)
+        candidate += 1
+    return primes
