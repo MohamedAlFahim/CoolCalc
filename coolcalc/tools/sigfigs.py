@@ -104,24 +104,6 @@ def significant_figure_info(value: str):
     return handle_sig_fig_info_with_point(value)
 
 
-# Note that character positions, rather than digit positions, are returned. This is to help with LaTeX underline
-# positioning later on (for when the calculator shows its work).
-
-# Test
-dictionary = {
-    '2220': 3,
-    '-0020.': 2,
-    '00000.000110': 3,
-    '20': 1,
-    '0.0': 0,
-    '2.0': 2,
-    '2.0e1': 2,
-    '0.00008': 1,
-    '2.0e3': 2,
-    '120': 2
-}
-
-
 def style_green(text: str):
     return '\033[92m' + text + '\033[0m'
 
@@ -130,21 +112,23 @@ def style_red(text: str):
     return '\033[91m' + text + '\033[0m'
 
 
-def underline_sig_figs(value: str, test_dictionary):
+def style_blue(text: str):
+    return '\033[94m' + text + '\033[0m'
+
+
+def underline_sig_figs(value: str, test_dictionary=None):
     underline_space = list(' ' * len(value))
     colored_value = list(value)
-    test_result = len(significant_figure_info(value)) == test_dictionary[value]
-    color_function = style_green if test_result else style_red
-    x = sorted(significant_figure_info(value), key=lambda x: x[1])
+    if test_dictionary is not None:
+        test_result = len(significant_figure_info(value)) == test_dictionary[value]
+        color_function = style_green if test_result else style_red
+    else:
+        color_function = style_blue
+    x = sorted(significant_figure_info(value), key=lambda each_tuple: each_tuple[1])
     for result_tuple in x:
         underline_space[result_tuple[1]] = color_function('^')
         colored_value[result_tuple[1]] = color_function(colored_value[result_tuple[1]])
     print(''.join(colored_value))
     print(''.join(underline_space))
-    print('TEST RESULT:', style_green('Pass') if test_result else style_red('Fail'))
-
-
-for key in dictionary:
-    print(' ')
-    underline_sig_figs(key, dictionary)
-    print(' ')
+    if test_dictionary is not None:
+        print('TEST RESULT:', style_green('Pass') if test_result else style_red('Fail'))
