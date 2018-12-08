@@ -10,6 +10,10 @@ class Node(ABC):
     def handle_signal(self, signal):
         raise NotImplementedError()
 
+    @abstractmethod
+    def fits(self, targets):
+        raise NotImplementedError()
+
     @property
     @abstractmethod
     def latex(self, *args):
