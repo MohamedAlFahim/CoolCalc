@@ -14,7 +14,6 @@ class Node(ABC):
     def fits(self, targets):
         raise NotImplementedError()
 
-    @property
     @abstractmethod
     def latex(self, *args):
         raise NotImplementedError()

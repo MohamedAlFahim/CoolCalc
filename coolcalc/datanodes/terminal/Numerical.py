@@ -2,6 +2,8 @@ from coolcalc.datanodes.terminal.Terminal import Terminal
 from abc import abstractmethod
 from coolcalc.tools.basic import remove_negative_sign
 from coolcalc.tools.basic import check_scientific_notation
+from coolcalc.preferences import HIGHLIGHT_COLOR
+from coolcalc.tools.latex import color
 
 
 class Numerical(Terminal):
@@ -30,12 +32,17 @@ class RegularNumerical(Numerical):
         else:
             raise Exception('The signal content', signal_content, 'is not recognized.')
 
-    @property
     def latex(self, *args):
         check_result = check_scientific_notation(self.value)
         if check_result is None:
             return str(self.value)
-        return f'{check_result[0]} \\times 10^{{{check_result[1]}}}'
+        coefficient = check_result[0]
+        exponent = check_result[1]
+        if 'highlight coefficient' in args:
+            coefficient = color(HIGHLIGHT_COLOR, coefficient)
+        if 'highlight exponent' in args:
+            exponent = color(HIGHLIGHT_COLOR, exponent)
+        return f'{coefficient} \\times 10^{{{exponent}}}'
 
     def fits(self, targets):
         return (super().fits(targets)) or ('regular numerical' in targets)
